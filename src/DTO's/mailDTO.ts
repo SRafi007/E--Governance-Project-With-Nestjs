@@ -20,4 +20,6 @@ export class sentMailDTO{
     @IsNotEmpty({message:"email should not be empty"})
     @IsEmail()
     receiverMail:string;
+    @IsNotEmpty({message:"id should not be empty"})
+    citizenId:number;
 }

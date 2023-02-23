@@ -1,4 +1,4 @@
-import { IsNotEmpty,IsNumber,MaxLength,MinLength,Length,IsEmail } from "class-validator";
+import { IsNotEmpty,IsNumber,MaxLength,MinLength,Length,IsEmail,IsOptional } from "class-validator";
 export class CitizenDTO{
     @IsNotEmpty({message:"Please Enter Id"})
     @IsNumber()
@@ -16,8 +16,9 @@ export class CitizenDTO{
     email:string;
 }
 export class CitizenLoginDTO{
-    @IsNotEmpty({message:"Please Enter Your Name"})
-    name:string;
+    @Length(11,11,{message:"Please check your phone number"})
+    @IsNotEmpty({message:"Please Enter Your Nid Number"})
+    phoneNumber:string;
     @IsNotEmpty({message:"Please Enter Your Nid Number"})
     @MaxLength(13,{message:"NID should not contain more than 13 characters"})
     @MinLength(10,{message:"NID should contain more than 9 characters"})
@@ -35,4 +36,31 @@ export class CitizenSignupDTO{
     phoneNumber:string;
     @IsEmail()
     email:string;
+}
+export class CitizenHistoryDTO{
+    des:string;
+    citizenId:number;
+
+}
+export class CitizenBioDTO{
+    @IsOptional()
+    @MaxLength(255)
+    address:string;
+    @IsOptional()
+    @MaxLength(20)
+    bloodGroup:string;
+    @IsOptional()
+    @MaxLength(2)
+    familyMembers:number;
+    @IsOptional()
+    @MaxLength(10)
+    maritalStatus:boolean;
+    @IsOptional()
+    @MaxLength(100)
+    jobDes:string;
+    @IsOptional()
+    @MaxLength(50)
+    postoffice:string;
+
+
 }

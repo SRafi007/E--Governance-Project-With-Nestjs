@@ -1,37 +1,42 @@
 import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Citizen } from "src/entities/citizens.entity";
+import { Repository } from "typeorm";
+import { CitizenDTO, CitizenHistoryDTO, CitizenLoginDTO } from "src/DTO's/citizenDTO";
+import { CitizenHistory } from "src/entities/history.entity";
 
 
 @Injectable()
 export class LoginService{
     
-    private dammyCitizenLoginData=[{name:"citizen1",nid:"1234567890000"},
-                                    {name:"citizen2",nid:"1234567890001"},
-                                    {name:"citizen3",nid:"1234567890002"}]
+        constructor(
+            @InjectRepository(Citizen)
+            private citizenRepo: Repository<Citizen>,
+            @InjectRepository(CitizenHistory)
+            private historiansRepo: Repository<CitizenHistory>
+    ){}
+
 
 
     
-    uname:string;
-    citizenLogin(citizen){
-        const citizenData=this.dammyCitizenLoginData.find(e=>e.name==citizen.name && e.nid==citizen.nid)
-        if(!citizenData){return "UserName Or Password Invalid"}
-        else{    
-            return "Login Successful"}
+    //*************************citizen Login Service 
+    async citizenLogin(loginInfo: CitizenLoginDTO) {
+    const tempdata=await this.citizenRepo.findOneBy(
+        {nid:loginInfo.nid,
+        phoneNumber:loginInfo.phoneNumber
+        }
+        );
         
-    }
-    citigenSignup(citizen){
-        const citizenData=this.dammyCitizenLoginData.find(e=>e.nid==citizen.nid);
-        if(!citizenData){
-            let newCitizenInfo={name:citizen.name, nid:citizen.nid};
-            this.dammyCitizenLoginData.push(newCitizenInfo);
-            return "Signup Successful";
+        if(tempdata)
+        {
+        let newActivity:CitizenHistoryDTO;
+        newActivity={des:"logged in the System",citizenId:tempdata.id}
+        this.historiansRepo.save(newActivity);
+        return tempdata.name;
         }
         else{
-            return "this NID already have an account";
+            return "Please Check You NID and Phone Number";
         }
-        
     }
 
-    citizenCount(){
-        return this.dammyCitizenLoginData.length;
-    }
 }

@@ -4,6 +4,9 @@ import { CitizenDTO, CitizenLoginDTO, CitizenSignupDTO } from "src/DTO's/citizen
 import { InjectRepository } from "@nestjs/typeorm";
 import { Citizen } from "src/entities/citizens.entity";
 import { Repository } from "typeorm";
+import { Mail } from "src/entities/mails.entity";
+import { MailService } from "./mail.service";
+import { CitizenBio } from "src/entities/citizenBio.entity";
 
 @Injectable()
 export class CitizenService {
@@ -12,79 +15,60 @@ export class CitizenService {
     constructor(
                 @InjectRepository(Citizen)
                 private citizenRepo: Repository<Citizen>,
+                @InjectRepository(Mail)
+                private mailRepo: Repository<Mail>,
+                @InjectRepository(CitizenBio)
+                private citizenBioRepo: Repository<CitizenBio>
     ){}
 
 
-    private dammyCitizenData=[{id:1,name:"citizen1",nid:1234567890001,phoneNumber:"01790084943",email:"citizen1@gmail.com"},
-                                     {id:2,name:"citizen2",nid:1234567890002,phoneNumber:"01790084943",email:"citizen1@gmail.com"},
-                                     {id:3,name:"citizen3",nid:1234567890003,phoneNumber:"01790084943",email:"citizen1@gmail.com"}]
-
-    private dammyMails=[{id:1, senderMail:"1@gmail.com",message:"Hello there",receiverMail:"2@gmail.com"},
-                        {id:2, senderMail:"2@gmail.com",message:"Hello there",receiverMail:"3@gmail.com"}]
-
-    private myMails=[];
-    private dammyID:number=1;
-
-
-citizenLogin(loginInfo: CitizenLoginDTO) {
-    const tempdata=this.citizenRepo.findOneBy({name:loginInfo.name,nid:loginInfo.nid});
-    return tempdata;
-}
 getCitizenData(){
-    return this.citizenRepo.find();
+    return this.citizenRepo.find({relations:["mails"],});
 }
-citigenSignup(citizen){
-    this.citizenRepo.save(citizen);
-    return "Signup Successful";/*
-    
-    //const citizenData=this.citizenRepo.findOneBy({nid:citizen.nid});
-    if(!this.citizenRepo.findOneBy({nid:citizen.nid})){
-
-        this.citizenRepo.save(citizen);
-        return "Signup Successful";
+async citigenSignup(citizen){
+    const tempdata=await this.citizenRepo.findOneBy({nid:citizen.nid});
+    if(tempdata)
+    {
+        return " This NID already have an account";
     }
     else{
-        return "this NID already have an account";
-    }*/
-    
+    this.citizenRepo.save(citizen);
+    return "done";
+    }     
 }
 updateProfile(profile: CitizenSignupDTO) {
-    this.citizenRepo.update({nid:profile.nid},{name:profile.name, phoneNumber:profile.phoneNumber,email:profile.email})
+    //this.citizenRepo.update({nid:profile.nid},{name:profile.name, phoneNumber:profile.phoneNumber,email:profile.email})
     return "updated";
 }
 
-citizenProfile(id){
-    const info=this.citizenRepo.findOneBy({id:id});
-    if(!info){
-        return "Please enter A Valid Id";
-    }
-    else{
-        return info;
-    }
+async citizenProfile(id){
+    const info=await this.citizenRepo.find({where:{id:id},
+                                    relations:{
+                                        mails:true
+                                    },
+                                    });
+
+    return info;
 }
 
-
-mailbox(mailAddress) {
-    let i:number;
-    this.myMails=[];
-    for(i=0;i<this.dammyMails.length;i++){
-    if(this.dammyMails[i].senderMail==mailAddress || this.dammyMails[i].receiverMail==mailAddress){
-        
-        this.myMails.push(this.dammyMails[i])
-    }
-    }
-    if(this.myMails.length!=0){
-        return this.myMails;
-    }
-    else {
-        return "Your Mail box is empty";
-    }
-    
+async updateBio(bio:any,id:number){
+    const tempdata=await this.citizenBioRepo.update({id:id},
+                                {address:bio.address,
+                               
+                                familyMembers:bio.familyMembers,
+                                maritalStatus:bio.maritalStatus,
+                                jobDes:bio.jobDes,
+                                postoffice:bio.postOffice
+                                })
+    return "Bio Edited"
 }
 
-getMailData(){
-    return this.dammyMails;
+getHistory(id:number){
+    return this.citizenRepo.find({where: {id:id},
+                                relations:{
+                                    history:true,
+                                },                       
+    })
 }
-
 
 }
