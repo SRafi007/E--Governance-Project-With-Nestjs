@@ -16,6 +16,8 @@ import * as fs from 'fs';
 import * as pdfmake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Campagin } from "src/entities/campagin.entity";
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+import { createObjectCsvWriter } from 'csv-writer';
 
 
 
@@ -142,39 +144,27 @@ async displayFeedback(){
     //return await this.feedbackRepo.find();
 }
 
-async printIDCard(){
-    
-    const tempdata=await this.citizenRepo.find();
-    // Define the content of the PDF document using pdfmake syntax
-    const docDefinition = {
-        content: [
-          { text: 'User Profile for'+""},
-          { text: 'Name: ' + ""},
-          { text: 'Email: ' + "" },
-          { text: 'Age: ' +"" },
-          { text: 'Address: ' + "" }
-        ],
-        styles: {
-            header: {
-                font: 'Roboto'
-            }
-        }
-      };
-      const fonts = {
-    Roboto: {
-        normal: 'Roboto-Regular.ttf',
-        bold: 'Roboto-Medium.ttf',
-        italics: 'Roboto-Italic.ttf',
-        bolditalics: 'Roboto-MediumItalic.ttf'
-    }
-};
-  
-      // Generate the PDF document
-      const pdf = pdfmake.createPdf(docDefinition);
-  
-      // Write the PDF document to a file
-      await pdf.getStream().pipe(fs.createWriteStream('./userPDF/user-profile.pdf'));
-      return tempdata;
+async printIDCard(id){
+    let path='citizen_'+id+'_info.txt'
+    const CSV_FILE_PATH = 'Uploads/citizenInfoPrint/'+path;
+    const tempdata=await this.citizenRepo.findOneBy({id:id})
+    const tempdataBio=await this.citizenBioRepo.findOneBy({citizenId:id})
+
+    const filename = 'user_data.txt';
+    const fileContent = JSON.stringify(tempdata);
+    const fileContentBio = JSON.stringify(tempdataBio);
+    //const fileContent = JSON.stringify(tempdata);
+    const content=fileContent+'\n'+fileContentBio;
+    //return currtime;
+    fs.writeFile(CSV_FILE_PATH, content, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log(`User data saved to ${filename}`);
+        
+      }
+    });
+    return content;
 }
 //----------------------------------------------
 async getCampaign(){

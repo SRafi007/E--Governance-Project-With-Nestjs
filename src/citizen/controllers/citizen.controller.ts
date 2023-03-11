@@ -146,7 +146,7 @@ export class CitizenController{
     @UseGuards(new SessionGuard)
     printIDCard(@Session()session){
         let idCard = session.citizenId;
-        return this.citizenService.printIDCard();
+        return this.citizenService.printIDCard(idCard);
     }
     //-------------------------------------------------
     @Get('campagins')

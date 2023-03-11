@@ -1,0 +1,2 @@
+{"id":2,"name":"citizen2","nid":"1234567890002","phoneNumber":"01790000002","email":"citizen2@gmail.com"}
+{"id":1,"address":"123 Main St bst","bloodGroup":"B-","age":30,"gender":"female","familyMembers":4,"maritalStatus":false,"jobDes":"doctor","postoffice":"dhanbari","photoName":"B-23252-removebg-preview.png","citizenId":2}
