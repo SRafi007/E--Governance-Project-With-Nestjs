@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable,Session } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Citizen } from "src/entities/citizens.entity";
 import { Repository } from "typeorm";
@@ -13,7 +13,7 @@ export class LoginService{
             @InjectRepository(Citizen)
             private citizenRepo: Repository<Citizen>,
             @InjectRepository(CitizenHistory)
-            private historiansRepo: Repository<CitizenHistory>
+            private historiesRepo: Repository<CitizenHistory>
     ){}
 
 
@@ -31,11 +31,12 @@ export class LoginService{
         {
         let newActivity:CitizenHistoryDTO;
         newActivity={des:"logged in the System",citizenId:tempdata.id}
-        this.historiansRepo.save(newActivity);
-        return tempdata.name;
+        
+        this.historiesRepo.save(newActivity);
+        return tempdata.id;
         }
         else{
-            return "Please Check You NID and Phone Number";
+            return 0;
         }
     }
 

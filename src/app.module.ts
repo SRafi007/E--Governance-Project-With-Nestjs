@@ -4,9 +4,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CitizenModule } from './citizen/modules/citizen.module';
 import { typeOrmConfig } from './config/typeorm.config';
+import { DoctorModule } from './doctor/doctormodule.module';
+import { EmployeeModule } from './employee/employeemodule.module';
 
 @Module({
-  imports: [CitizenModule,
+  imports: [CitizenModule,EmployeeModule,DoctorModule,
           TypeOrmModule.forRoot({type: 'postgres',
           host: 'localhost',
           port: 5432,

@@ -36,6 +36,7 @@ export class CitizenSignupDTO{
     phoneNumber:string;
     @IsEmail()
     email:string;
+
 }
 export class CitizenHistoryDTO{
     des:string;
@@ -50,6 +51,12 @@ export class CitizenBioDTO{
     @MaxLength(20)
     bloodGroup:string;
     @IsOptional()
+    @MaxLength(3)
+    age:number;
+    @IsOptional()
+    @MaxLength(10)
+    gender:string;
+    @IsOptional()
     @MaxLength(2)
     familyMembers:number;
     @IsOptional()
@@ -61,6 +68,17 @@ export class CitizenBioDTO{
     @IsOptional()
     @MaxLength(50)
     postoffice:string;
+    @IsOptional()
+    citizenId:number;
+    @IsOptional()
+    photoName:string;
 
 
+}
+export class FeedbackDTO{
+    @IsNotEmpty()
+    @MaxLength(200)
+    feedback:string;
+    @IsNotEmpty()
+    citizenId:number;
 }

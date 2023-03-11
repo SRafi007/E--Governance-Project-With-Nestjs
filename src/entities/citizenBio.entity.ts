@@ -1,4 +1,5 @@
-import{Entity,Column,PrimaryGeneratedColumn,OneToOne} from 'typeorm';
+import{Entity,Column,PrimaryGeneratedColumn,OneToOne,JoinColumn} from 'typeorm';
+import { Citizen } from './citizens.entity';
 @Entity('citizenBios')
 export class CitizenBio{
     @PrimaryGeneratedColumn()
@@ -8,8 +9,14 @@ export class CitizenBio{
     address: string;
   
     @Column({ nullable: true })
-    bloodGroups: string;
+    bloodGroup: string;
   
+    @Column({ nullable: true })
+    age: number;
+  
+    @Column({ nullable: true })
+    gender: string;
+
     @Column({ nullable: true })
     familyMembers: number;
   
@@ -21,4 +28,14 @@ export class CitizenBio{
   
     @Column({ nullable: true })
     postoffice: string;
+
+    @Column({ nullable: true })
+    photoName: string;
+
+    @Column({ nullable: false })
+    citizenId:number;
+
+    @OneToOne(()=>Citizen,(citizen)=>citizen.bio)
+    @JoinColumn()
+    citizen:Citizen;
 }

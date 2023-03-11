@@ -1,4 +1,5 @@
-import {Entity,PrimaryGeneratedColumn,Column,OneToMany } from 'typeorm';
+import {Entity,PrimaryGeneratedColumn,Column,OneToMany, OneToOne } from 'typeorm';
+import { CitizenBio } from './citizenBio.entity';
 import { CitizenHistory } from './history.entity';
 import { Mail } from './mails.entity';
 @Entity('citizens')
@@ -19,4 +20,6 @@ export class Citizen  {
     mails:Mail[];
     @OneToMany(()=>CitizenHistory,(history)=>history.citizen)
     history:CitizenHistory[];
+    @OneToOne(()=>CitizenBio,(bio)=>bio.citizen)
+    bio:CitizenBio;
 }
