@@ -153,7 +153,18 @@ export class CitizenController{
     getCampaign(){
         return this.citizenService.getCampaign();
     }
-
+    @Post('/medicalData')
+    @UseGuards(new SessionGuard)
+    addMedicalInfo(@Body()medicalData,@Session() session){
+        const id = session.citizenId;
+        return this.citizenService.addMedicalInfo(medicalData,id);
+    }
+    @Get('/myMedicalData')
+    @UseGuards(new SessionGuard)
+    getMyMedicalData(@Session() session,@Body('password')password:string){
+        const id = session.citizenId;
+        return this.citizenService.getMyMedicalData(id,password);
+    }
 
 
 

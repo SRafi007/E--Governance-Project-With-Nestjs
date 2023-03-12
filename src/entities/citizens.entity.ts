@@ -1,5 +1,6 @@
 import {Entity,PrimaryGeneratedColumn,Column,OneToMany, OneToOne } from 'typeorm';
 import { CitizenBio } from './citizenBio.entity';
+import { CitizenMedicalData } from './citizenMedicalReport.entity';
 import { CitizenHistory } from './history.entity';
 import { Mail } from './mails.entity';
 @Entity('citizens')
@@ -22,4 +23,6 @@ export class Citizen  {
     history:CitizenHistory[];
     @OneToOne(()=>CitizenBio,(bio)=>bio.citizen)
     bio:CitizenBio;
+    @OneToMany(()=>CitizenMedicalData,(MedicalData)=>MedicalData.citizen)
+    MedicalData:CitizenHistory[];
 }

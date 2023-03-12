@@ -18,6 +18,7 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Campagin } from "src/entities/campagin.entity";
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 import { createObjectCsvWriter } from 'csv-writer';
+import { CitizenMedicalData } from "src/entities/citizenMedicalReport.entity";
 
 
 
@@ -38,7 +39,9 @@ export class CitizenService {
                 @InjectRepository(CitizenHistory)
                 private historiesRepo: Repository<CitizenHistory>,
                 @InjectRepository(Campagin)
-                private campaignRepo: Repository<Campagin>
+                private campaignRepo: Repository<Campagin>,
+                @InjectRepository(CitizenMedicalData)
+                private medicalDataRepo: Repository<CitizenMedicalData>
     ){}
 
 
@@ -175,6 +178,30 @@ async getCampaign(){
     }
     else{
         return " unsuccessful";
+    }
+}
+async addMedicalInfo(medicalData,id){
+    const salt = await bcrypt.genSalt();
+    const hassedpassed = await bcrypt.hash(medicalData.password, salt);
+    medicalData.password = hassedpassed;
+    medicalData.citizenId = id;
+    return this.medicalDataRepo.save(medicalData);
+}
+async getMyMedicalData(id,password){
+    const tempdata=await this.medicalDataRepo.findOneBy({citizenId:id})
+    const temppass=tempdata.password.toString();
+    console.log(temppass+password);
+    if(tempdata){
+        const isMatch= await bcrypt.compare(password, temppass);
+        if(isMatch) {
+            return tempdata;
+            }
+            else {
+                return 0;
+            }
+    }
+    else{
+        return "Failed";
     }
 }
 
