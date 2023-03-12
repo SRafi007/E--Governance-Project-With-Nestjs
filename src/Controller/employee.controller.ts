@@ -6,6 +6,7 @@ import { Body, Controller, Param, ParseIntPipe, Post, Put, UseGuards, UsePipes, 
 import { SessionGuard } from './session.guard';
 import { EmployeeForm2 } from 'src/Data/employee2dto';
 import { EmployeeService2 } from 'src/Services/employeeservice2.service';
+import { Campagin } from 'src/entities/campagin.entity';
 
 
 @Controller('employee') 
@@ -131,6 +132,14 @@ import { EmployeeService2 } from 'src/Services/employeeservice2.service';
   @Post('sendemail')
   sendEmail(@Body() mydata) {
     return this.empService.sendEmail(mydata);
+  }
+  @Post('/addcampagin')
+  addCampagin(@Body()campaignDto){
+    return this.empService.addCampaign(campaignDto);
+  }
+  @Get('campagins')
+  getCampaign(){
+      return this.empService.getCampaign();
   }
 }
     

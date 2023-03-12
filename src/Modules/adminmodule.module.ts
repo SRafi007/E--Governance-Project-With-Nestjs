@@ -13,6 +13,7 @@ import { AdminEntity } from "src/Entity/adminentity.entity";
 import { AdminController } from "../Controller/admin.controller"
 import { AdminService } from "../Services/adminservice.service"
 import { MailerModule } from '@nestjs-modules/mailer';
+import { Campagin } from 'src/entities/campagin.entity';
 // import { ManagerService } from "src/manager/manager.service";
 // import { ManagerEntity } from "src/manager/manager.entity";
 
@@ -32,7 +33,7 @@ imports: [MailerModule.forRoot({
       rejectUnauthorized: false,
                    }
                   }
-}), TypeOrmModule.forFeature([ AdminEntity, EmployeeEntity, AllUsersEntity, SalaryEntity, DoctorEntity]) ],
+}), TypeOrmModule.forFeature([ AdminEntity, EmployeeEntity, AllUsersEntity, SalaryEntity, DoctorEntity,Campagin]) ],
 controllers: [AdminController],
 providers: [AdminService,EmployeeService,SalaryService],
 

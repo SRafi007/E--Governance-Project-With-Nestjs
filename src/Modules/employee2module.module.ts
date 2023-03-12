@@ -6,9 +6,10 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { EmployeeService } from 'src/Services/employee.service';
 import { EmployeeRepository } from 'src/Repository/employee.repository';
 import { EmployeeEntity2 } from 'src/Entity/employee2.entity';
+import { Campagin } from 'src/entities/campagin.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([ EmployeeEntity2 ]) ],
+    imports: [TypeOrmModule.forFeature([ EmployeeEntity2 ,Campagin]) ],
     controllers: [],
     providers: [],
 })

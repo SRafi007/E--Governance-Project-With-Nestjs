@@ -4,7 +4,7 @@ import { Entity,PrimaryGeneratedColumn,Column, ManyToOne, } from "typeorm";
 import { Citizen } from "./citizens.entity";
 //import { Citizen } from "./citizens.entity";
 
-@Entity('mails')
+@Entity('chats')
 export class Mail  {
     @PrimaryGeneratedColumn()
     id:number;

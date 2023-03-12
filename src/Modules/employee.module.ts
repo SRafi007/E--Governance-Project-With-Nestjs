@@ -11,6 +11,7 @@ import { AllUsersEntity } from 'src/Entity/allusers.signup.entity';
 import { EmployeeEntity2 } from 'src/Entity/employee2.entity';
 import { EmployeeService2 } from 'src/Services/employeeservice2.service';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { Campagin } from 'src/entities/campagin.entity';
 // import { ManagerService } from "src/manager/manager.service";
 // import { ManagerEntity } from "src/manager/manager.entity";
 
@@ -30,7 +31,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
       rejectUnauthorized: false,
                    }
                   }
-}),EmployeeRepository, TypeOrmModule.forFeature([ EmployeeEntity, AdminEntity, AllUsersEntity, EmployeeEntity2, SalaryEntity, DoctorEntity]) ],
+}),EmployeeRepository, TypeOrmModule.forFeature([ EmployeeEntity, AdminEntity, AllUsersEntity, EmployeeEntity2, SalaryEntity, DoctorEntity,Campagin]) ],
     controllers: [EmployeeController],
     providers: [EmployeeService,EmployeeService2],
 })

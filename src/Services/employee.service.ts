@@ -6,6 +6,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmployeeEntity } from 'src/Entity/employee.entity';
 import { MailerService } from "@nestjs-modules/mailer/dist";
+import { Campagin } from 'src/entities/campagin.entity';
+import { Repository } from 'typeorm';
 
 
 @Injectable()
@@ -14,6 +16,8 @@ export class EmployeeService{
     constructor(@InjectRepository(EmployeeEntity)
     private empRepo: EmployeeRepository,
     private mailerService: MailerService,
+    @InjectRepository(Campagin)
+    private campaginRepo:Repository<Campagin>
 
     ) { }
 
@@ -99,5 +103,11 @@ export class EmployeeService{
         subject: mydata.subject,
         text: mydata.text, 
       });
+    }
+    async addCampaign(campaign){
+        return await this.campaginRepo.save(campaign);
+    }
+    async getCampaign(){
+        return this.campaginRepo.find();
     }
 }
