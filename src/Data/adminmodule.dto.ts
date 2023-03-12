@@ -1,10 +1,8 @@
 import { IsNotEmpty, IsInt, Length } from "class-validator";
 
-export class EmployeeFormUpdate {   
+export class AdminFormUpdate {   
    
-   @Length(3,8)
+    @Length(3, 15)
     name: string;
-
-
 
 }

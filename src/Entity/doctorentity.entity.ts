@@ -1,20 +1,19 @@
-import { BlogEntity } from 'src/Blog/blogentity.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
-@Entity("doctors")
+@Entity("doctor")
 export class DoctorEntity{
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   name: string;
-  
+
   @Column()
   age: number;
 
   @Column()
   collegeName : string;
-  
+
   @Column()
   specialist : string;
 
@@ -27,9 +26,12 @@ export class DoctorEntity{
   @Column()
   password: string;
 
-   @Column()
-  filename: string;
+  @Column()
+  blog: string;
 
-  @OneToMany(() => BlogEntity, (blog) => blog.doctor)
-  blogs: BlogEntity[]
+   @Column()
+    filename: string;
+    
+    @Column()//-1 ->doctor
+    role:number
 }

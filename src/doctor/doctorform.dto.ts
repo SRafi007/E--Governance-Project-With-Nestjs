@@ -1,5 +1,4 @@
-import { IsNotEmpty, IsEmail, MinLength, IsString, MaxLength, IsPhoneNumber } from "class-validator";
-
+import { IsNotEmpty, IsEmail, MinLength, IsString, MaxLength, IsPhoneNumber, Matches } from "class-validator";
 export class DoctorForm {   
    @IsNotEmpty()
     name: string;
@@ -16,16 +15,15 @@ export class DoctorForm {
     @MaxLength(11)
     phoneNumber : string;
 
-    @IsEmail() 
-    @IsNotEmpty()
+    @IsEmail({}, { message: 'Invalid email address' })
     email: string;
-
+    
     @MinLength(8)
+    @MaxLength(15)
     @IsNotEmpty()
+    @Matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/,
+    { message: 'Password too weak' })
     password: string;
- 
-    @IsString()
-    blog: string;
 
     filename : string;
 

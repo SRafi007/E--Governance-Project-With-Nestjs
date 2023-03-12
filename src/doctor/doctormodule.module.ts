@@ -4,6 +4,8 @@ import { doctorController } from "./doctor.controller";
 import { DoctorService } from "./doctorservice.service";
 import { DoctorEntity } from "./doctorentity.entity";
 import { MailerModule } from "@nestjs-modules/mailer";
+import { BlogService } from "src/Blog/blogservice.service";
+import { BlogEntity } from "src/Blog/blogentity.entity";
 
 
 @Module({
@@ -14,13 +16,13 @@ imports: [MailerModule.forRoot({
                ignoreTLS: true,
                secure: true,
                auth: {
-                   user: 'your email address',
-                   pass: 'your app password'
+                   user: 'globalnews421@gmail.com',
+                   pass: 'fixabtecmsvjdfbz'
                },
               }
-  }), TypeOrmModule.forFeature([DoctorEntity])],
+  }), TypeOrmModule.forFeature([DoctorEntity,BlogEntity])],
 controllers: [doctorController],
-providers: [DoctorService]
+providers: [DoctorService,BlogService]
 
 })
 

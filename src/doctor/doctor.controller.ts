@@ -1,19 +1,21 @@
-import { Body,  Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, ParseIntPipe, Patch, Post, Put, Query, Session, UploadedFile, UseInterceptors, UsePipes, ValidationPipe} from '@nestjs/common';
+import { Body,  Controller, Delete, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, ParseIntPipe, Patch, Post, Put, Query, Session, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { BlogForm } from 'src/Blog/blogdto.dto';
+import { BlogService } from 'src/Blog/blogservice.service';
 import { DoctorEntity } from './doctorentity.entity';
 import { DoctorForm } from './doctorform.dto';
 import { DoctorService } from './doctorservice.service';
+import { SessionGuard } from './session.guard';
 
 @Controller('doctor')
 export class doctorController {
-  constructor(private doctorService: DoctorService) {}
+  constructor(
+    private doctorService: DoctorService,
+    private blogService: BlogService
+    ) {}
 
   //1
-  @Get()
-  getConnection(): any {
-    return "return Connection"
-  }
   @Get('/alldoctors')
   getAllDoctor(): any {
     return this.doctorService.getAllDoctor();
@@ -83,18 +85,17 @@ export class doctorController {
 
   //9
   @Put('/updatedoctor')
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe())
-  async updatedoctor(
-    @Body('name') name: string,
-    @Body('id') id: number,
-  ): Promise<any> {
-    const result = await this.doctorService.updateDoctor(name, id);
+  async updatedoctor(@Session() session, @Body('name') name: string): Promise<any> {
+    const result = await this.doctorService.updateDoctor(name,session.email);
     if (result.affected === 1) {
       return 'Record updated successfully';
     } else {
       return 'Record not found';
     }
   }
+
   //10
   @Put('/updatedoctor/:id')
   @UsePipes(new ValidationPipe())
@@ -156,14 +157,17 @@ export class doctorController {
 })
 
 }))
-signup(@Body() mydto:DoctorForm,@UploadedFile(  new ParseFilePipe({
+  async signup(@Body() mydto:DoctorForm,@UploadedFile(  new ParseFilePipe({
   validators: [new MaxFileSizeValidator({ maxSize: 160000 }), new FileTypeValidator({ fileType: 'png|jpg|jpeg' }),],
-}),) file: Express.Multer.File){
-
+}),) 
+file: Express.Multer.File){
+await this.doctorService.checkEmailExists(mydto.email);
 mydto.filename = file.filename;  
 
+
+
 return this.doctorService.signup(mydto);
-console.log(file)
+//console.log(file)
 }
 
   @Post('signin')
@@ -177,4 +181,40 @@ console.log(file)
       return { message: 'Invalid email or password' };
     }
   }
+
+  @Get('signout')
+signout(@Session() session)
+{
+  if(session.destroy()){return {message:"you are logged out"};}
+  else{throw new UnauthorizedException("invalid actions");}
+}
+
+  @Post('sendmail')
+  sendEmail(@Body() mydata){
+  return this.doctorService.sendEmail(mydata);
+  }
+
+  //Blog Post
+
+  @Post('/insertblog')
+  @UsePipes(new ValidationPipe())
+    insertBlog(@Body() blogdto: BlogForm): any {
+      return this.blogService.insertBlog(blogdto);
+    }
+
+    @Put('/Updateblog')
+    @UsePipes(new ValidationPipe())
+      UpdateBlog(@Body() blogdto: DoctorForm): any {
+        return this.blogService.UpdateBlog(blogdto);
+      }
+   
+    @Get('/findblogsbydoctor/:id')
+    getBlogByDoctorID(@Param('id', ParseIntPipe) id: number): any {
+      return this.doctorService.getBlogByDoctorID(id);
+    }
+
+    @Get('/finddoctorbyblog/:id')
+    getDoctorByBlogID(@Param('id', ParseIntPipe) id: number): any {
+       return this.blogService.getBlogByDoctorID(id);
+    }
 }

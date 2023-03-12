@@ -12,7 +12,9 @@ export class DoctorService {
     @InjectRepository(DoctorEntity)
     private doctorRepo: Repository<DoctorEntity>,
     private mailerService: MailerService,
+
   ) {}
+  
 
   //1
   getAllDoctor(): any {
@@ -57,14 +59,13 @@ export class DoctorService {
     doctoraccount.phoneNumber = mydto.phoneNumber;
     doctoraccount.email = mydto.email;
     doctoraccount.password = mydto.password;
-    doctoraccount.blog = mydto.blog;
     return this.doctorRepo.save(doctoraccount);
   }
 
   //9
-  updateDoctor(name, id): any {
-    console.log(name + id);
-    return this.doctorRepo.update(id, { name: name });
+  updateDoctor(name, email): any {
+    //console.log(name + email);
+    return this.doctorRepo.update({email: email},{name:name});
   }
 
   //10
@@ -103,10 +104,19 @@ export class DoctorService {
 
 
   async signup(mydto){
+    
     const salt = await bcrypt.genSalt();
     const hassedpassed = await bcrypt.hash(mydto.password, salt);
     mydto.password= hassedpassed;
     return this.doctorRepo.save(mydto);
+    }
+
+    async checkEmailExists(email: string): Promise<boolean> {
+      const doctor = await this.doctorRepo.findOne({ where: { email } });
+      if (doctor) {
+        throw new BadRequestException('Email already exists');
+      }
+      return false;
     }
     
 
@@ -131,4 +141,22 @@ export class DoctorService {
     
     }
 
+    getBlogByDoctorID(id):any {
+      return this.doctorRepo.find({ 
+              where: {id:id},
+          relations: {
+              blogs: true,
+          },
+       });
   }
+  UpdateBlogByDoctorID(id):any {
+      return this.doctorRepo.find({ 
+              where: {id:id},
+          relations: {
+              blogs: true,
+          },
+       });
+
+
+ 
+  }}
