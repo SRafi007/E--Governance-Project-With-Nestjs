@@ -111,6 +111,15 @@ async updateBio(bio:CitizenBioDTO,id:any){
 
     
 }
+async getBio(id:any){
+    const tempdata=await this.citizenBioRepo.findOneBy({citizenId:id})
+
+        return tempdata;
+
+
+    
+}
+
 deleteCitizen(id:number){
     return this.citizenRepo.delete({id:id});
 }
@@ -148,26 +157,27 @@ async displayFeedback(){
 }
 
 async printIDCard(id){
-    let path='citizen_'+id+'_info.txt'
-    const CSV_FILE_PATH = 'Uploads/citizenInfoPrint/'+path;
+    // let path='citizen_'+id+'_info.txt'
+    // const CSV_FILE_PATH = 'Uploads/citizenInfoPrint/'+path;
     const tempdata=await this.citizenRepo.findOneBy({id:id})
     const tempdataBio=await this.citizenBioRepo.findOneBy({citizenId:id})
 
-    const filename = 'user_data.txt';
-    const fileContent = JSON.stringify(tempdata);
-    const fileContentBio = JSON.stringify(tempdataBio);
-    //const fileContent = JSON.stringify(tempdata);
-    const content=fileContent+'\n'+fileContentBio;
-    //return currtime;
-    fs.writeFile(CSV_FILE_PATH, content, (err) => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log(`User data saved to ${filename}`);
+    // const filename = 'user_data.txt';
+    // const fileContent = JSON.stringify(tempdata);
+    // const fileContentBio = JSON.stringify(tempdataBio);
+    // //const fileContent = JSON.stringify(tempdata);
+    // const content=fileContent+'\n'+fileContentBio;
+    // //return currtime;
+    // fs.writeFile(CSV_FILE_PATH, content, (err) => {
+    //   if (err) {
+    //     console.error(err);
+    //   } else {
+    //     console.log(`User data saved to ${filename}`);
         
-      }
-    });
-    return content;
+    //   }
+    // });
+	const mergedData=Object.assign({}, tempdata, tempdataBio)
+    return mergedData;
 }
 //----------------------------------------------
 async getCampaign(){

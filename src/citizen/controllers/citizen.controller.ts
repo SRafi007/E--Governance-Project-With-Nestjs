@@ -20,30 +20,33 @@ export class CitizenController{
     constructor(private  citizenService: CitizenService, private loginService: LoginService,private mailService: MailService){}
 
     @Put('/signup')
-    @UsePipes(new ValidationPipe())
     citigenSignup(@Body()citizen:CitizenSignupDTO){
         return this.citizenService.citigenSignup(citizen);
         //return this.loginService.citigenSignup(citizen);
     }
 
     @Post('/login')
-    @UsePipes(new ValidationPipe())
-    async citizenLogin(@Body()loginInfo:CitizenLoginDTO,@Session()session){
+    async citizenLogin(@Body()loginInfo,@Session()session){
         let tempdata:any;
+        if(loginInfo.nid==undefined)
+        {return 0;}
+        console.log(loginInfo);
         if(await this.loginService.citizenLogin(loginInfo)){
             tempdata =await this.loginService.citizenLogin(loginInfo);
             session.citizenId=tempdata;
-            return tempdata;
+            const info={stat:1,id:tempdata.id,name:tempdata.name,nid:tempdata.nid,email:tempdata.email}
+            console.log(info);
+            return info;
             //return "Login Successful";
         }
         else{
-            return "Please Check You NID and Phone Number";
+            return 0;
         }
     }
-    @Get('/profile')
-    @UseGuards(new SessionGuard)
-    myProfile(@Session()session){
-        return this.citizenService.citizenProfile(session.citizenId);
+    @Get('/profile/:id')
+    myProfile(@Param('id')id:any){
+        //return this.citizenService.citizenProfile(session.citizenId);
+		return this.citizenService.citizenProfile(id);//temp just for nextjs test
     }
 
 
@@ -73,6 +76,10 @@ export class CitizenController{
         console.log(file);
         bio.photoName=file.originalname;
         return this.citizenService.updateBio(bio,session.citizenId);
+    }
+    @Get('/getBio')
+    getBio(){
+        return this.citizenService.getBio(2);
     }
     /*
     @Put('/bio/:id')
@@ -107,7 +114,7 @@ export class CitizenController{
 //------------------------------------------------------------
 //User can send mails to other Users
     @Post('/mail')
-    @UsePipes(new ValidationPipe())
+    
     sendMail(@Body()mail:sentMailDTO){
         return this.mailService.sendMail(mail)
     }
@@ -128,7 +135,7 @@ export class CitizenController{
     }
 //------------------------------------------------------------
     @Get('/history/:id')
-    @UseGuards(new SessionGuard)
+    //@UseGuards(new SessionGuard)
     getHistory(@Param('id',ParseIntPipe)id:number){
         return this.citizenService.getHistory(id);
     }
@@ -142,11 +149,10 @@ export class CitizenController{
     displayFeedback(){
         return this.citizenService.displayFeedback();
     }
-    @Get('/printIDCard')
-    @UseGuards(new SessionGuard)
-    printIDCard(@Session()session){
-        let idCard = session.citizenId;
-        return this.citizenService.printIDCard(idCard);
+    @Get('/printIDCard/:id')
+    printIDCard(@Param('id')id:any){
+        
+        return this.citizenService.printIDCard(id);
     }
     //-------------------------------------------------
     @Get('campagins')
@@ -160,10 +166,10 @@ export class CitizenController{
         return this.citizenService.addMedicalInfo(medicalData,id);
     }
     @Get('/myMedicalData')
-    @UseGuards(new SessionGuard)
+    //@UseGuards(new SessionGuard)
     getMyMedicalData(@Session() session,@Body('password')password:string){
-        const id = session.citizenId;
-        return this.citizenService.getMyMedicalData(id,password);
+        //const id = session.citizenId;
+        return this.citizenService.getMyMedicalData(2,"1234");
     }
 
 

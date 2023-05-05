@@ -21,6 +21,9 @@ export class LoginService{
     
     //*************************citizen Login Service 
     async citizenLogin(loginInfo: CitizenLoginDTO) {
+        if(loginInfo==null){
+            return 0
+        }
     const tempdata=await this.citizenRepo.findOneBy(
         {nid:loginInfo.nid,
         phoneNumber:loginInfo.phoneNumber
@@ -33,7 +36,7 @@ export class LoginService{
         newActivity={des:"logged in the System",citizenId:tempdata.id}
         
         this.historiesRepo.save(newActivity);
-        return tempdata.id;
+        return tempdata;
         }
         else{
             return 0;
