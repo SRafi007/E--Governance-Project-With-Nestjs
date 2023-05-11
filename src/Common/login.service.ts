@@ -21,9 +21,7 @@ export class LoginService{
     
     //*************************citizen Login Service 
     async citizenLogin(loginInfo: CitizenLoginDTO) {
-        if(loginInfo==null){
-            return 0
-        }
+
     const tempdata=await this.citizenRepo.findOneBy(
         {nid:loginInfo.nid,
         phoneNumber:loginInfo.phoneNumber

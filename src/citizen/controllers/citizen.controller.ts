@@ -1,4 +1,4 @@
-import {Body, Controller,Delete,Get,Param,Post, Put, Query,Req, UsePipes,ValidationPipe,Session,Patch, UseInterceptors} from "@nestjs/common";
+import {Body, Controller,Delete,Get,Param,Post, Put, Query,Req, UsePipes,ValidationPipe,Session,Patch, UseInterceptors,Res} from "@nestjs/common";
 import { CitizenService } from "../services/citizen.service";
 import { CitizenBioDTO,CitizenLoginDTO ,CitizenSignupDTO, FeedbackDTO} from "src/DTO's/citizenDTO";
 import {Request} from "express";
@@ -50,32 +50,39 @@ export class CitizenController{
     }
 
 
-    @Put('/update')
-    @UseGuards(new SessionGuard)
-    updateProfile(@Body()profile:CitizenSignupDTO){
-        return this.citizenService.updateProfile(profile);
+    @Put('/update/:id')
+    updateProfile(@Body()profile:CitizenSignupDTO,@Param('id')id:any){
+        return this.citizenService.updateProfile(profile,id);
     }
 
-   @Put('/updatebio')
-   @UseGuards(new SessionGuard)
+   @Put('/updatePhoto/:id')
+   
     @UseInterceptors(FileInterceptor('file',
     {
         storage:diskStorage({
             destination:'./Uploads/citizenPhoto',
             filename:function(req,file,cb){
-                cb(null,file.originalname+Date.now())
+                cb(null,Date.now()+file.originalname)
             }
         })
     }))
-    updateBio(@Body()bio:CitizenBioDTO,@UploadedFile(new ParseFilePipe({
+    updatePhoto(@Param('id')id:any,@UploadedFile(new ParseFilePipe({
         validators:[
           new MaxFileSizeValidator({maxSize:500000}),
           new FileTypeValidator({fileType:'png|jpg|jpeg|'}),
         ],
-}))file:Express.Multer.File,@Session()session){
+}))file:Express.Multer.File){
+    let bio=new CitizenBioDTO();
         console.log(file);
-        bio.photoName=file.originalname;
-        return this.citizenService.updateBio(bio,session.citizenId);
+        bio.photoName=Date.now()+file.originalname;
+        return this.citizenService.updatePhoto(bio,id);
+    }
+
+
+@Put('/updatebio/:id')
+    updateBio(@Body()bio:CitizenBioDTO,@Param('id')id:any){
+        
+        return this.citizenService.updateBio(bio,id);
     }
     @Get('/getBio')
     getBio(){
@@ -95,6 +102,11 @@ export class CitizenController{
             return "citizen deleted successfully";
         }
     }
+    @Get('/getimage/:name')
+    getImages(@Param('name') name, @Res() res) {
+      res.sendFile(name,{ root: './Uploads/citizenPhoto' })
+    }
+  
     @Get()
     getCitizen(){
         return this.citizenService.getCitizenData();
@@ -159,17 +171,17 @@ export class CitizenController{
     getCampaign(){
         return this.citizenService.getCampaign();
     }
-    @Post('/medicalData')
-    @UseGuards(new SessionGuard)
-    addMedicalInfo(@Body()medicalData,@Session() session){
-        const id = session.citizenId;
+    @Post('/medicalData/:id')
+   // @UseGuards(new SessionGuard)
+    addMedicalInfo(@Body()medicalData,@Param('id')id:any){
+        //const id = session.citizenId;
         return this.citizenService.addMedicalInfo(medicalData,id);
     }
-    @Get('/myMedicalData')
+    @Get('/myMedicalData/:id')
     //@UseGuards(new SessionGuard)
-    getMyMedicalData(@Session() session,@Body('password')password:string){
+    getMyMedicalData(@Param('id')id:any,@Body('password')password:string){
         //const id = session.citizenId;
-        return this.citizenService.getMyMedicalData(2,"1234");
+        return this.citizenService.getMyMedicalData(id,password);
     }
 
 

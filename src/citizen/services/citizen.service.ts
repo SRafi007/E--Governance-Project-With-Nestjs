@@ -52,17 +52,22 @@ async citigenSignup(citizen){
     const tempdata=await this.citizenRepo.findOneBy({nid:citizen.nid});
     if(tempdata)
     {
-        return " This NID already have an account";
+        return 0;
     }
     else{
     
     this.citizenRepo.save(citizen);
-    return "done";
+    return 1;
     }     
 }
-updateProfile(profile: CitizenSignupDTO) {
-    //this.citizenRepo.update({nid:profile.nid},{name:profile.name, phoneNumber:profile.phoneNumber,email:profile.email})
-    return "updated";
+async updateProfile(profile:any,id) {
+    
+    if(await this.citizenRepo.update({id:id},{name:profile.name, phoneNumber:profile.phoneNumber,email:profile.email})){
+        return 1;
+    }
+    else{
+    return 0;
+    }
 }
 
 async citizenProfile(id){
@@ -86,7 +91,35 @@ async updateBio(bio:CitizenBioDTO,id:any){
                                 maritalStatus:bio.maritalStatus,
                                 jobDes:bio.jobDes,
                                 postoffice:bio.postoffice,
-                                photoName:bio.photoName,
+                                //citizenId:id
+                                })
+    if(tempdata.affected==0){
+        await this.citizenBioRepo.save(
+            {address:bio.address,
+            bloodGroup:bio.bloodGroup,
+            age:bio.age,
+            gender:bio.gender,
+            familyMembers:bio.familyMembers,
+            maritalStatus:bio.maritalStatus,
+            jobDes:bio.jobDes,
+            postoffice:bio.postoffice,
+            citizenId:id,
+            photoName:"",
+            })
+            return "Bio added"
+    }
+    else{
+        return "Bio Updated"
+    }
+
+
+    
+}
+async updatePhoto(bio:any,id:any){
+    const tempdata=await this.citizenBioRepo.update({citizenId:id},
+                                {
+                                    photoName:bio.photoName,
+                               
                                 //citizenId:id
                                 })
     if(tempdata.affected==0){
@@ -107,10 +140,8 @@ async updateBio(bio:CitizenBioDTO,id:any){
     else{
         return "Bio Updated"
     }
-
-
-    
 }
+
 async getBio(id:any){
     const tempdata=await this.citizenBioRepo.findOneBy({citizenId:id})
 
@@ -198,8 +229,8 @@ async addMedicalInfo(medicalData,id){
     return this.medicalDataRepo.save(medicalData);
 }
 async getMyMedicalData(id,password){
-    const tempdata=await this.medicalDataRepo.findOneBy({citizenId:id})
-    const temppass=tempdata.password.toString();
+    const tempdata=await this.medicalDataRepo.find({where:{citizenId:id}})
+    const temppass=tempdata[0].password.toString();
     console.log(temppass+password);
     if(tempdata){
         const isMatch= await bcrypt.compare(password, temppass);

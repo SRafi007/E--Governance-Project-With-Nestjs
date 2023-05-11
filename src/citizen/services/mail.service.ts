@@ -35,7 +35,7 @@ async mailbox(mailAddress) {
         return mails;
     }
     else {
-        return "Your Mail box is empty";
+        return 0;
     }
     
 }
