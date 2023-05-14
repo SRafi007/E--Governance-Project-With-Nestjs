@@ -138,7 +138,7 @@ async updatePhoto(bio:any,id:any){
             return "Bio added"
     }
     else{
-        return "Bio Updated"
+        return "Bio - Updated"
     }
 }
 

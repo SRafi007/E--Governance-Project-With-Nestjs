@@ -11,6 +11,7 @@ import { AdminModule } from './Modules/adminmodule.module';
 import { EmployeeModule2 } from './Modules/employee2module.module';
 import {EmployeeModule } from './Modules/employee.module';
 import { BlogModule } from './Blog/blogmodule.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 //import { DoctorEntity } from './doctor/doctorentity.entity';
 
 
@@ -23,7 +24,8 @@ import { BlogModule } from './Blog/blogmodule.module';
           password: 'qxCmXlXi6gN4t8OEoVZM',
           database: 'railway',
           autoLoadEntities: true,
-          synchronize: true,})],
+          synchronize: true,})
+        ],
   controllers: [AppController],
   providers: [AppService],
 })
