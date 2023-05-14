@@ -11,6 +11,8 @@ import { diskStorage } from "multer";
 import { UploadedFile, UseGuards } from "@nestjs/common/decorators";
 import { UnauthorizedException } from '@nestjs/common/exceptions';
 import { SessionGuard } from "src/Common/session.guard";
+import * as path from 'path';
+import * as fs from 'fs';
 
 
 
@@ -84,9 +86,14 @@ export class CitizenController{
         
         return this.citizenService.updateBio(bio,id);
     }
-    @Get('/getBio')
-    getBio(){
-        return this.citizenService.getBio(2);
+    @Get('/getBio/:id')
+    getBio(@Param('id')id:any){
+        return this.citizenService.getBio(id);
+    }
+    @Get('/getUserPhotoName/:id')
+    async getUserPhoto(@Param('id')id:any){
+        return this.citizenService.getUserPhoto(id);
+  
     }
     /*
     @Put('/bio/:id')
@@ -104,7 +111,15 @@ export class CitizenController{
     }
     @Get('/getimage/:name')
     getImages(@Param('name') name, @Res() res) {
-      res.sendFile(name,{ root: './Uploads/citizenPhoto' })
+        const filePath = path.join('./Uploads/citizenPhoto', name);
+      try{
+        fs.accessSync(filePath);
+        res.sendFile(name,{ root: './Uploads/citizenPhoto' })
+      }
+      catch(error){
+        name="user_icon.jpg";
+        res.sendFile(name,{ root: './Uploads/citizenPhoto' })
+    }
     }
   
     @Get()
@@ -151,10 +166,10 @@ export class CitizenController{
     getHistory(@Param('id',ParseIntPipe)id:number){
         return this.citizenService.getHistory(id);
     }
-    @Post('/feedback')
-    @UseGuards(new SessionGuard)
-    addFeedback(@Body()feedback:any,@Session()session){
-        feedback.citizenId=session.citizenId;
+    @Post('/feedback/:id')
+    
+    addFeedback(@Body()feedback:any,@Param('id')id:any){
+        feedback.citizenId=id;
         return this.citizenService.addFeedback(feedback);
     }
     @Get('/displayFeedback')
@@ -172,16 +187,24 @@ export class CitizenController{
         return this.citizenService.getCampaign();
     }
     @Post('/medicalData/:id')
-   // @UseGuards(new SessionGuard)
+   
     addMedicalInfo(@Body()medicalData,@Param('id')id:any){
-        //const id = session.citizenId;
+       
         return this.citizenService.addMedicalInfo(medicalData,id);
     }
-    @Get('/myMedicalData/:id')
-    //@UseGuards(new SessionGuard)
+    @Post('/myMedicalData/:id')
+    
     getMyMedicalData(@Param('id')id:any,@Body('password')password:string){
-        //const id = session.citizenId;
         return this.citizenService.getMyMedicalData(id,password);
+    }
+    @Get('/myMedicalDataById/:id')
+    
+    getMyMedicalDataByid(@Param('id')id:any,@Body('password')password:string){
+        return this.citizenService.getMyMedicalDataById(id);
+    }
+    @Get('/deleteMedicalData/:id')
+    deleteMedicalInfo(@Param('id')id:any){
+        return this.citizenService.deleteMedicalInfo(id);
     }
 
 

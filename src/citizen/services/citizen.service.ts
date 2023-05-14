@@ -150,6 +150,22 @@ async getBio(id:any){
 
     
 }
+async getUserPhoto(id:any){
+    const tempdata=await this.citizenBioRepo.findOneBy({citizenId:id})
+    if(tempdata){
+        if(tempdata.photoName!==undefined)
+        { return tempdata.photoName;}
+        else{ return "user_icon.jpg"}
+    }
+    else{
+        return "user_icon.jpg"
+    }
+        
+        
+
+
+    
+}
 
 deleteCitizen(id:number){
     return this.citizenRepo.delete({id:id});
@@ -177,9 +193,17 @@ async addFeedback(feedback:FeedbackDTO){
     }
 }
 async displayFeedback(){
+    let newArr=[];
     const tempdata=await this.feedbackRepo.find()
     if(tempdata){
-        return tempdata
+        let i=0;
+        for (i=0;i<tempdata.length;i++){
+            let photoname=await this.getUserPhoto(tempdata[i].citizenId)
+            const newobj={id:tempdata[i].id,feedback:tempdata[i].feedback,date:tempdata[i].date,citizenId:tempdata[i].citizenId,photoname:photoname}
+            newArr.push(newobj);
+        }
+        
+        return newArr
     }
     else{
         return 0;
@@ -228,9 +252,13 @@ async addMedicalInfo(medicalData,id){
     medicalData.citizenId = id;
     return this.medicalDataRepo.save(medicalData);
 }
+async deleteMedicalInfo(id){
+    const data=await this.medicalDataRepo.delete(id);
+    return data;
+}
 async getMyMedicalData(id,password){
     const tempdata=await this.medicalDataRepo.find({where:{citizenId:id}})
-    const temppass=tempdata[0].password.toString();
+    const temppass=tempdata[0].password;
     console.log(temppass+password);
     if(tempdata){
         const isMatch= await bcrypt.compare(password, temppass);
@@ -243,6 +271,18 @@ async getMyMedicalData(id,password){
     }
     else{
         return "Failed";
+    }
+}
+
+async getMyMedicalDataById(id){
+    const tempdata=await this.medicalDataRepo.find({where:{citizenId:id}})
+    if(tempdata){
+       
+            return tempdata;
+  
+    }
+    else{
+        return 0;
     }
 }
 
